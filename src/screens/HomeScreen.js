@@ -5,12 +5,9 @@ import { Ionicons } from '@expo/vector-icons';
 
 export default function HomeScreen({ navigation }) {
   const [user, setUser] = useState(null);
-  const [sosCount, setSosCount] = useState(0);
-  const [reportsCount, setReportsCount] = useState(0);
 
   useEffect(() => {
     fetchUserData();
-    fetchStats();
     
     // Subscribe to auth changes
     const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
@@ -27,27 +24,6 @@ export default function HomeScreen({ navigation }) {
   const fetchUserData = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     setUser(user);
-  };
-
-  const fetchStats = async () => {
-    try {
-      // Fetch SOS count
-      const { count: sosCount } = await supabase
-        .from('sos_events')
-        .select('*', { count: 'exact', head: true })
-        .eq('user_id', user?.id);
-
-      // Fetch reports count
-      const { count: reportsCount } = await supabase
-        .from('incidents')
-        .select('*', { count: 'exact', head: true })
-        .eq('user_id', user?.id);
-
-      setSosCount(sosCount || 0);
-      setReportsCount(reportsCount || 0);
-    } catch (error) {
-      console.error('Error fetching stats:', error);
-    }
   };
 
   const handleLogout = async () => {
@@ -91,18 +67,6 @@ export default function HomeScreen({ navigation }) {
     </TouchableOpacity>
   );
 
-  const StatCard = ({ icon, value, label, color }) => (
-    <View style={styles.statCard}>
-      <View style={[styles.statIcon, { backgroundColor: `${color}20` }]}>
-        <Ionicons name={icon} size={20} color={color} />
-      </View>
-      <View style={styles.statContent}>
-        <Text style={styles.statValue}>{value}</Text>
-        <Text style={styles.statLabel}>{label}</Text>
-      </View>
-    </View>
-  );
-
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView 
@@ -125,38 +89,21 @@ export default function HomeScreen({ navigation }) {
           </TouchableOpacity>
         </View>
 
-        {/* Stats Overview */}
-        <View style={styles.statsSection}>
-          <Text style={styles.sectionTitle}>Your Safety Stats</Text>
-          <View style={styles.statsGrid}>
-            <StatCard 
-              icon="shield-checkmark" 
-              value="100%" 
-              label="Safe Status" 
-              color="#10b981" 
-            />
-            <StatCard 
-              icon="alert-circle" 
-              value={sosCount} 
-              label="SOS Activated" 
-              color="#ef4444" 
-            />
-            <StatCard 
-              icon="document-text" 
-              value={reportsCount} 
-              label="Reports" 
-              color="#f59e0b" 
-            />
-          </View>
-        </View>
-
         {/* Quick Actions - Emergency Section */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Emergency Actions</Text>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Emergency Actions</Text>
+            <TouchableOpacity 
+              onPress={() => navigation.navigate('SOSInstructions')}
+              style={styles.helpButton}
+            >
+              <Ionicons name="help-circle" size={20} color="#6b7280" />
+            </TouchableOpacity>
+          </View>
           <MenuCard
             icon="alert-circle"
             title="Emergency SOS"
-            description="Send immediate distress signal with location"
+            description="Send immediate distress signal with location & audio"
             color="#ef4444"
             isEmergency={true}
             onPress={() => navigation.navigate('SOS')}
@@ -187,6 +134,13 @@ export default function HomeScreen({ navigation }) {
             color="#10b981"
             onPress={() => navigation.navigate('SafetyCheckpoints')}
           />
+          <MenuCard
+            icon="shield"
+            title="Safety Tips"
+            description="Learn safety best practices"
+            color="#06b6d4"
+            onPress={() => navigation.navigate('SafetyTips')}
+          />
         </View>
 
         {/* Community & Resources */}
@@ -200,44 +154,49 @@ export default function HomeScreen({ navigation }) {
             onPress={() => navigation.navigate('SafetyNetwork')}
           />
           <MenuCard
-            icon="shield"
-            title="Safety Tips"
-            description="Learn safety best practices"
-            color="#06b6d4"
-            onPress={() => navigation.navigate('SafetyTips')}
-          />
-          <MenuCard
-            icon="alert"
+            icon="call"
             title="Emergency Contacts"
             description="Quick access to emergency services"
             color="#ec4899"
             onPress={() => navigation.navigate('EmergencyContacts')}
           />
+          <MenuCard
+            icon="time"
+            title="Incident History"
+            description="View your past reports & alerts"
+            color="#6b7280"
+            onPress={() => navigation.navigate('History')}
+          />
         </View>
 
-        {/* Bottom Navigation */}
-        <View style={styles.bottomNav}>
-          <TouchableOpacity 
-            style={styles.bottomNavItem}
-            onPress={() => navigation.navigate('History')}
-          >
-            <Ionicons name="time" size={24} color="#6b7280" />
-            <Text style={styles.bottomNavText}>History</Text>
-          </TouchableOpacity>
-          <TouchableOpacity 
-            style={styles.bottomNavItem}
+        {/* Settings & Logout */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Account</Text>
+          <MenuCard
+            icon="settings"
+            title="Settings"
+            description="Configure app preferences"
+            color="#374151"
             onPress={() => navigation.navigate('Settings')}
-          >
-            <Ionicons name="settings" size={24} color="#6b7280" />
-            <Text style={styles.bottomNavText}>Settings</Text>
-          </TouchableOpacity>
-          <TouchableOpacity 
-            style={styles.bottomNavItem}
+          />
+          <MenuCard
+            icon="log-out"
+            title="Logout"
+            description="Sign out of your account"
+            color="#ef4444"
             onPress={handleLogout}
-          >
-            <Ionicons name="log-out" size={24} color="#ef4444" />
-            <Text style={[styles.bottomNavText, { color: '#ef4444' }]}>Logout</Text>
-          </TouchableOpacity>
+          />
+        </View>
+
+        {/* Safety Status Indicator */}
+        <View style={styles.safetyStatus}>
+          <View style={styles.statusIndicator}>
+            <View style={styles.statusDot} />
+            <Text style={styles.statusText}>System Status: Active</Text>
+          </View>
+          <Text style={styles.statusSubtext}>
+            Location services: {user ? 'Enabled' : 'Checking...'} • SOS Ready
+          </Text>
         </View>
       </ScrollView>
 
@@ -248,8 +207,8 @@ export default function HomeScreen({ navigation }) {
         activeOpacity={0.9}
       >
         <View style={styles.emergencyButtonInner}>
-          <Ionicons name="alert-circle" size={30} color="#fff" />
-          <Text style={styles.emergencyButtonText}>SOS</Text>
+          <Ionicons name="alert-circle" size={32} color="#fff" />
+          <Text style={styles.emergencyButtonText}>EMERGENCY</Text>
         </View>
       </TouchableOpacity>
     </SafeAreaView>
@@ -288,55 +247,19 @@ const styles = StyleSheet.create({
   section: {
     marginBottom: 24,
   },
+  sectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
   sectionTitle: {
     fontSize: 18,
     fontWeight: '600',
     color: '#374151',
-    marginBottom: 16,
   },
-  statsSection: {
-    marginBottom: 32,
-  },
-  statsGrid: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    gap: 12,
-  },
-  statCard: {
-    flex: 1,
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    borderWidth: 1,
-    borderColor: '#e5e7eb',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  statIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  statContent: {
-    flex: 1,
-  },
-  statValue: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#1f2937',
-    marginBottom: 2,
-  },
-  statLabel: {
-    fontSize: 12,
-    color: '#6b7280',
+  helpButton: {
+    padding: 4,
   },
   menuCard: {
     flexDirection: 'row',
@@ -382,38 +305,45 @@ const styles = StyleSheet.create({
     color: '#6b7280',
     lineHeight: 16,
   },
-  bottomNav: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
+  safetyStatus: {
     backgroundColor: '#fff',
-    borderRadius: 16,
+    borderRadius: 12,
     padding: 16,
-    marginTop: 20,
+    marginTop: 12,
     marginBottom: 40,
     borderWidth: 1,
     borderColor: '#e5e7eb',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  bottomNavItem: {
     alignItems: 'center',
-    gap: 4,
   },
-  bottomNavText: {
+  statusIndicator: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+    gap: 8,
+  },
+  statusDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#10b981',
+  },
+  statusText: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#374151',
+  },
+  statusSubtext: {
     fontSize: 12,
     color: '#6b7280',
-    fontWeight: '500',
+    textAlign: 'center',
   },
   floatingEmergencyButton: {
     position: 'absolute',
     bottom: 30,
     right: 20,
-    width: 70,
-    height: 70,
-    borderRadius: 35,
+    width: 80,
+    height: 80,
+    borderRadius: 40,
     backgroundColor: '#ef4444',
     justifyContent: 'center',
     alignItems: 'center',
@@ -430,7 +360,7 @@ const styles = StyleSheet.create({
   },
   emergencyButtonText: {
     color: '#fff',
-    fontSize: 12,
+    fontSize: 10,
     fontWeight: 'bold',
     marginTop: 2,
   },
