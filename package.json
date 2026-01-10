@@ -18,6 +18,8 @@
     "base64-arraybuffer": "^1.0.2",
     "expo": "~54.0.31",
     "expo-av": "~16.0.8",
+    "expo-image-picker": "~17.0.10",
+    "expo-linear-gradient": "^15.0.8",
     "expo-location": "~19.0.8",
     "expo-notifications": "^0.32.16",
     "expo-status-bar": "~3.0.9",

@@ -1,8 +1,11 @@
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, SafeAreaView, TextInput, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, SafeAreaView, TextInput, Alert, ActivityIndicator, Image } from 'react-native';
 import { useState, useEffect, useContext } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { AuthContext } from '../context/AuthContext';
 import { supabase } from '../services/supabase';
+import * as ImagePicker from 'expo-image-picker';
+import * as FileSystem from 'expo-file-system/legacy';
+import { decode } from 'base64-arraybuffer';
 
 export default function ProfileScreen({ navigation }) {
     const { user } = useContext(AuthContext);
@@ -12,6 +15,7 @@ export default function ProfileScreen({ navigation }) {
         name: '',
         email: '',
         phone: '',
+        avatar_url: null,
     });
 
     useEffect(() => {
@@ -24,14 +28,72 @@ export default function ProfileScreen({ navigation }) {
         try {
             setLoading(true);
             setProfileData({
-                name: user.user_metadata?.name || '',
+                name: user.user_metadata?.full_name || user.user_metadata?.name || '',
                 email: user.email || '',
-                phone: user.user_metadata?.phone || '',
+                phone: user.user_metadata?.mobile_number || user.user_metadata?.phone || '',
+                avatar_url: user.user_metadata?.avatar_url || null,
             });
         } catch (error) {
             console.error('Error loading profile:', error);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const pickImage = async () => {
+        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (status !== 'granted') {
+            Alert.alert('Permission needed', 'Sorry, we need camera roll permissions to change your photo!');
+            return;
+        }
+
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsEditing: true,
+            aspect: [1, 1],
+            quality: 0.5,
+        });
+
+        if (!result.canceled) {
+            uploadAvatar(result.assets[0].uri);
+        }
+    };
+
+    const uploadAvatar = async (uri) => {
+        try {
+            setSaving(true);
+            const fileExt = uri.split('.').pop() || 'jpg';
+            const userId = user.id;
+            const fileName = `${userId}/${Date.now()}.${fileExt}`;
+
+            const base64 = await FileSystem.readAsStringAsync(uri, { encoding: 'base64' });
+
+            const { error: uploadError } = await supabase.storage
+                .from('avatars')
+                .upload(fileName, decode(base64), {
+                    contentType: 'image/' + fileExt,
+                    upsert: true
+                });
+
+            if (uploadError) throw uploadError;
+
+            const { data: publicUrlData } = supabase.storage.from('avatars').getPublicUrl(fileName);
+
+            // Update auth metadata
+            const { error: updateError } = await supabase.auth.updateUser({
+                data: { avatar_url: publicUrlData.publicUrl }
+            });
+
+            if (updateError) throw updateError;
+
+            setProfileData(prev => ({ ...prev, avatar_url: publicUrlData.publicUrl }));
+            Alert.alert('Success', 'Profile photo updated!');
+
+        } catch (error) {
+            console.error('Error uploading avatar:', error);
+            Alert.alert('Error', 'Failed to update profile photo');
+        } finally {
+            setSaving(false);
         }
     };
 
@@ -115,9 +177,19 @@ export default function ProfileScreen({ navigation }) {
             <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
                 {/* Profile Picture Section */}
                 <View style={styles.profileSection}>
-                    <View style={styles.avatarContainer}>
-                        <Ionicons name="person-circle" size={100} color="#3b82f6" />
-                    </View>
+                    <TouchableOpacity onPress={pickImage} style={styles.avatarContainer}>
+                        {profileData.avatar_url ? (
+                            <Image
+                                source={{ uri: profileData.avatar_url }}
+                                style={styles.avatarImage}
+                            />
+                        ) : (
+                            <Ionicons name="person-circle" size={100} color="#3b82f6" />
+                        )}
+                        <View style={styles.editBadge}>
+                            <Ionicons name="camera" size={16} color="#fff" />
+                        </View>
+                    </TouchableOpacity>
                     <Text style={styles.userName}>{profileData.name || 'User'}</Text>
                     <Text style={styles.userEmail}>{profileData.email}</Text>
                 </View>
@@ -247,6 +319,25 @@ const styles = StyleSheet.create({
     },
     avatarContainer: {
         marginBottom: 16,
+        position: 'relative',
+    },
+    avatarImage: {
+        width: 100,
+        height: 100,
+        borderRadius: 50,
+    },
+    editBadge: {
+        position: 'absolute',
+        bottom: 0,
+        right: 0,
+        backgroundColor: '#3b82f6',
+        width: 32,
+        height: 32,
+        borderRadius: 16,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderWidth: 2,
+        borderColor: '#fff',
     },
     userName: {
         fontSize: 24,

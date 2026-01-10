@@ -1,11 +1,11 @@
 import { useState } from 'react';
-import { 
-  View, 
-  TextInput, 
-  Text, 
-  TouchableOpacity, 
-  StyleSheet, 
-  KeyboardAvoidingView, 
+import {
+  View,
+  TextInput,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  KeyboardAvoidingView,
   Platform,
   ScrollView,
   ActivityIndicator,
@@ -15,6 +15,8 @@ import { supabase } from '../services/supabase';
 import { Ionicons } from '@expo/vector-icons';
 
 export default function SignupScreen({ navigation }) {
+  const [fullName, setFullName] = useState('');
+  const [mobileNumber, setMobileNumber] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -26,14 +28,28 @@ export default function SignupScreen({ navigation }) {
 
   const validateForm = () => {
     const newErrors = {};
-    
+
+    // Full name validation
+    if (!fullName.trim()) {
+      newErrors.fullName = 'Full name is required';
+    } else if (fullName.trim().length < 2) {
+      newErrors.fullName = 'Name must be at least 2 characters';
+    }
+
+    // Mobile number validation
+    if (!mobileNumber.trim()) {
+      newErrors.mobileNumber = 'Mobile number is required';
+    } else if (!/^[0-9]{10}$/.test(mobileNumber.replace(/[\s-]/g, ''))) {
+      newErrors.mobileNumber = 'Please enter a valid 10-digit mobile number';
+    }
+
     // Email validation
     if (!email.trim()) {
       newErrors.email = 'Email is required';
     } else if (!/\S+@\S+\.\S+/.test(email)) {
       newErrors.email = 'Please enter a valid email address';
     }
-    
+
     // Password validation
     if (!password) {
       newErrors.password = 'Password is required';
@@ -42,14 +58,14 @@ export default function SignupScreen({ navigation }) {
     } else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(password)) {
       newErrors.password = 'Include uppercase, lowercase & number';
     }
-    
+
     // Confirm password validation
     if (!confirmPassword) {
       newErrors.confirmPassword = 'Please confirm your password';
     } else if (password !== confirmPassword) {
       newErrors.confirmPassword = 'Passwords do not match';
     }
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -57,19 +73,19 @@ export default function SignupScreen({ navigation }) {
   const getPasswordStrength = (pass) => {
     if (pass.length === 0) return { strength: 0, color: '#e5e7eb', text: '' };
     if (pass.length < 6) return { strength: 25, color: '#ef4444', text: 'Weak' };
-    
+
     const hasUpper = /[A-Z]/.test(pass);
     const hasLower = /[a-z]/.test(pass);
     const hasNumber = /\d/.test(pass);
     const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(pass);
-    
+
     let score = 0;
     if (hasUpper) score++;
     if (hasLower) score++;
     if (hasNumber) score++;
     if (hasSpecial) score++;
     if (pass.length >= 8) score++;
-    
+
     if (score <= 2) return { strength: 50, color: '#f59e0b', text: 'Fair' };
     if (score <= 4) return { strength: 75, color: '#3b82f6', text: 'Good' };
     return { strength: 100, color: '#10b981', text: 'Strong' };
@@ -79,17 +95,21 @@ export default function SignupScreen({ navigation }) {
 
   async function handleSignUp() {
     if (!validateForm()) return;
-    
+
     setLoading(true);
     setErrors({});
     setSuccessMessage('');
 
     try {
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email: email.trim(),
         password,
         options: {
-          emailRedirectTo: 'yourapp://welcome', // Adjust this for your deep link
+          emailRedirectTo: 'yourapp://welcome',
+          data: {
+            full_name: fullName.trim(),
+            mobile_number: mobileNumber.replace(/[\s-]/g, ''),
+          }
         }
       });
 
@@ -110,6 +130,8 @@ export default function SignupScreen({ navigation }) {
             {
               text: 'OK',
               onPress: () => {
+                setFullName('');
+                setMobileNumber('');
                 setEmail('');
                 setPassword('');
                 setConfirmPassword('');
@@ -129,11 +151,11 @@ export default function SignupScreen({ navigation }) {
   }
 
   return (
-    <KeyboardAvoidingView 
+    <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={styles.container}
     >
-      <ScrollView 
+      <ScrollView
         contentContainerStyle={styles.scrollContent}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
@@ -141,7 +163,7 @@ export default function SignupScreen({ navigation }) {
         <View style={styles.content}>
           {/* Header */}
           <View style={styles.header}>
-            <TouchableOpacity 
+            <TouchableOpacity
               style={styles.backButton}
               onPress={() => navigation.goBack()}
               disabled={loading}
@@ -170,6 +192,51 @@ export default function SignupScreen({ navigation }) {
 
           {/* Form */}
           <View style={styles.form}>
+            {/* Full Name Input */}
+            <View style={styles.inputContainer}>
+              <Text style={styles.label}>Full Name</Text>
+              <View style={[styles.inputWrapper, errors.fullName && styles.inputError]}>
+                <Ionicons name="person-outline" size={20} color="#666" style={styles.inputIcon} />
+                <TextInput
+                  style={styles.input}
+                  placeholder="Enter your full name"
+                  placeholderTextColor="#999"
+                  value={fullName}
+                  onChangeText={(text) => {
+                    setFullName(text);
+                    if (errors.fullName) setErrors({ ...errors, fullName: '' });
+                  }}
+                  autoCapitalize="words"
+                  autoComplete="name"
+                  editable={!loading}
+                />
+              </View>
+              {errors.fullName && <Text style={styles.fieldError}>{errors.fullName}</Text>}
+            </View>
+
+            {/* Mobile Number Input */}
+            <View style={styles.inputContainer}>
+              <Text style={styles.label}>Mobile Number</Text>
+              <View style={[styles.inputWrapper, errors.mobileNumber && styles.inputError]}>
+                <Ionicons name="call-outline" size={20} color="#666" style={styles.inputIcon} />
+                <TextInput
+                  style={styles.input}
+                  placeholder="Enter your mobile number"
+                  placeholderTextColor="#999"
+                  value={mobileNumber}
+                  onChangeText={(text) => {
+                    setMobileNumber(text);
+                    if (errors.mobileNumber) setErrors({ ...errors, mobileNumber: '' });
+                  }}
+                  keyboardType="phone-pad"
+                  autoComplete="tel"
+                  maxLength={10}
+                  editable={!loading}
+                />
+              </View>
+              {errors.mobileNumber && <Text style={styles.fieldError}>{errors.mobileNumber}</Text>}
+            </View>
+
             {/* Email Input */}
             <View style={styles.inputContainer}>
               <Text style={styles.label}>Email Address</Text>
@@ -182,7 +249,7 @@ export default function SignupScreen({ navigation }) {
                   value={email}
                   onChangeText={(text) => {
                     setEmail(text);
-                    if (errors.email) setErrors({...errors, email: ''});
+                    if (errors.email) setErrors({ ...errors, email: '' });
                   }}
                   autoCapitalize="none"
                   keyboardType="email-address"
@@ -205,33 +272,33 @@ export default function SignupScreen({ navigation }) {
                   value={password}
                   onChangeText={(text) => {
                     setPassword(text);
-                    if (errors.password) setErrors({...errors, password: ''});
+                    if (errors.password) setErrors({ ...errors, password: '' });
                     if (errors.confirmPassword && text === confirmPassword) {
-                      setErrors({...errors, confirmPassword: ''});
+                      setErrors({ ...errors, confirmPassword: '' });
                     }
                   }}
                   secureTextEntry={secureTextEntry}
                   editable={!loading}
                 />
-                <TouchableOpacity 
+                <TouchableOpacity
                   onPress={() => setSecureTextEntry(!secureTextEntry)}
                   style={styles.eyeIcon}
                 >
-                  <Ionicons 
-                    name={secureTextEntry ? "eye-outline" : "eye-off-outline"} 
-                    size={20} 
-                    color="#666" 
+                  <Ionicons
+                    name={secureTextEntry ? "eye-outline" : "eye-off-outline"}
+                    size={20}
+                    color="#666"
                   />
                 </TouchableOpacity>
               </View>
-              
+
               {/* Password Strength Indicator */}
               {password.length > 0 && (
                 <View style={styles.strengthContainer}>
                   <View style={styles.strengthBarBackground}>
-                    <View style={[styles.strengthBar, { 
+                    <View style={[styles.strengthBar, {
                       width: `${passwordStrength.strength}%`,
-                      backgroundColor: passwordStrength.color 
+                      backgroundColor: passwordStrength.color
                     }]} />
                   </View>
                   <Text style={[styles.strengthText, { color: passwordStrength.color }]}>
@@ -239,36 +306,36 @@ export default function SignupScreen({ navigation }) {
                   </Text>
                 </View>
               )}
-              
+
               {/* Password Requirements */}
               <View style={styles.requirementsContainer}>
                 <Text style={styles.requirementsTitle}>Password must contain:</Text>
                 <View style={styles.requirementItem}>
-                  <Ionicons 
-                    name={password.length >= 6 ? "checkmark-circle" : "ellipse-outline"} 
-                    size={16} 
-                    color={password.length >= 6 ? "#10b981" : "#9ca3af"} 
+                  <Ionicons
+                    name={password.length >= 6 ? "checkmark-circle" : "ellipse-outline"}
+                    size={16}
+                    color={password.length >= 6 ? "#10b981" : "#9ca3af"}
                   />
                   <Text style={styles.requirementText}>At least 6 characters</Text>
                 </View>
                 <View style={styles.requirementItem}>
-                  <Ionicons 
-                    name={/[A-Z]/.test(password) ? "checkmark-circle" : "ellipse-outline"} 
-                    size={16} 
-                    color={/[A-Z]/.test(password) ? "#10b981" : "#9ca3af"} 
+                  <Ionicons
+                    name={/[A-Z]/.test(password) ? "checkmark-circle" : "ellipse-outline"}
+                    size={16}
+                    color={/[A-Z]/.test(password) ? "#10b981" : "#9ca3af"}
                   />
                   <Text style={styles.requirementText}>One uppercase letter</Text>
                 </View>
                 <View style={styles.requirementItem}>
-                  <Ionicons 
-                    name={/\d/.test(password) ? "checkmark-circle" : "ellipse-outline"} 
-                    size={16} 
-                    color={/\d/.test(password) ? "#10b981" : "#9ca3af"} 
+                  <Ionicons
+                    name={/\d/.test(password) ? "checkmark-circle" : "ellipse-outline"}
+                    size={16}
+                    color={/\d/.test(password) ? "#10b981" : "#9ca3af"}
                   />
                   <Text style={styles.requirementText}>One number</Text>
                 </View>
               </View>
-              
+
               {errors.password && <Text style={styles.fieldError}>{errors.password}</Text>}
             </View>
 
@@ -284,19 +351,19 @@ export default function SignupScreen({ navigation }) {
                   value={confirmPassword}
                   onChangeText={(text) => {
                     setConfirmPassword(text);
-                    if (errors.confirmPassword) setErrors({...errors, confirmPassword: ''});
+                    if (errors.confirmPassword) setErrors({ ...errors, confirmPassword: '' });
                   }}
                   secureTextEntry={confirmSecureTextEntry}
                   editable={!loading}
                 />
-                <TouchableOpacity 
+                <TouchableOpacity
                   onPress={() => setConfirmSecureTextEntry(!confirmSecureTextEntry)}
                   style={styles.eyeIcon}
                 >
-                  <Ionicons 
-                    name={confirmSecureTextEntry ? "eye-outline" : "eye-off-outline"} 
-                    size={20} 
-                    color="#666" 
+                  <Ionicons
+                    name={confirmSecureTextEntry ? "eye-outline" : "eye-off-outline"}
+                    size={20}
+                    color="#666"
                   />
                 </TouchableOpacity>
               </View>
@@ -314,7 +381,7 @@ export default function SignupScreen({ navigation }) {
             </View>
 
             {/* Sign Up Button */}
-            <TouchableOpacity 
+            <TouchableOpacity
               style={[styles.signupButton, loading && styles.signupButtonDisabled]}
               onPress={handleSignUp}
               disabled={loading}
@@ -342,13 +409,13 @@ export default function SignupScreen({ navigation }) {
                 <Ionicons name="logo-google" size={24} color="#DB4437" />
                 <Text style={styles.socialButtonText}>Google</Text>
               </TouchableOpacity>
-              
+
             </View>
 
             {/* Login Link */}
             <View style={styles.loginContainer}>
               <Text style={styles.loginText}>Already have an account? </Text>
-              <TouchableOpacity 
+              <TouchableOpacity
                 onPress={() => navigation.navigate('Login')}
                 disabled={loading}
               >

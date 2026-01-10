@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, SafeAreaView, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, SafeAreaView, Alert, Image } from 'react-native';
 import { useState, useEffect } from 'react';
 import { supabase } from '../services/supabase';
 import { Ionicons } from '@expo/vector-icons';
@@ -8,7 +8,7 @@ export default function HomeScreen({ navigation }) {
 
   useEffect(() => {
     fetchUserData();
-    
+
     // Subscribe to auth changes
     const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
       if (session?.user) {
@@ -47,7 +47,7 @@ export default function HomeScreen({ navigation }) {
   };
 
   const MenuCard = ({ icon, title, description, color, onPress, isEmergency = false }) => (
-    <TouchableOpacity 
+    <TouchableOpacity
       style={[
         styles.menuCard,
         isEmergency && styles.emergencyCard,
@@ -69,7 +69,7 @@ export default function HomeScreen({ navigation }) {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <ScrollView 
+      <ScrollView
         style={styles.container}
         showsVerticalScrollIndicator={false}
       >
@@ -81,11 +81,18 @@ export default function HomeScreen({ navigation }) {
               {user?.user_metadata?.name || user?.email?.split('@')[0] || 'User'}
             </Text>
           </View>
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.profileButton}
             onPress={() => navigation.navigate('Profile')}
           >
-            <Ionicons name="person-circle" size={40} color="#3b82f6" />
+            {user?.user_metadata?.avatar_url ? (
+              <Image
+                source={{ uri: user.user_metadata.avatar_url }}
+                style={styles.profileImage}
+              />
+            ) : (
+              <Ionicons name="person-circle" size={40} color="#3b82f6" />
+            )}
           </TouchableOpacity>
         </View>
 
@@ -93,7 +100,7 @@ export default function HomeScreen({ navigation }) {
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>Emergency Actions</Text>
-            <TouchableOpacity 
+            <TouchableOpacity
               onPress={() => navigation.navigate('SOSInstructions')}
               style={styles.helpButton}
             >
@@ -200,17 +207,7 @@ export default function HomeScreen({ navigation }) {
         </View>
       </ScrollView>
 
-      {/* Floating Emergency Button */}
-      <TouchableOpacity 
-        style={styles.floatingEmergencyButton}
-        onPress={() => navigation.navigate('SOS')}
-        activeOpacity={0.9}
-      >
-        <View style={styles.emergencyButtonInner}>
-          <Ionicons name="alert-circle" size={32} color="#fff" />
-          <Text style={styles.emergencyButtonText}>EMERGENCY</Text>
-        </View>
-      </TouchableOpacity>
+      
     </SafeAreaView>
   );
 }
@@ -243,6 +240,11 @@ const styles = StyleSheet.create({
   },
   profileButton: {
     padding: 4,
+  },
+  profileImage: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
   },
   section: {
     marginBottom: 24,
@@ -337,23 +339,7 @@ const styles = StyleSheet.create({
     color: '#6b7280',
     textAlign: 'center',
   },
-  floatingEmergencyButton: {
-    position: 'absolute',
-    bottom: 30,
-    right: 20,
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: '#ef4444',
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#ef4444',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.3,
-    shadowRadius: 12,
-    elevation: 8,
-    zIndex: 100,
-  },
+
   emergencyButtonInner: {
     alignItems: 'center',
     justifyContent: 'center',

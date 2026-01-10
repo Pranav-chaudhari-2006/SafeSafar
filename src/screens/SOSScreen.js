@@ -110,7 +110,7 @@ export default function SOSScreen() {
 
       recordingRef.current = recording;
       addTimelineEvent('Audio recording started', 'PROCESSING');
-      
+
       // Start recording timer
       let time = 0;
       timerRef.current = setInterval(() => {
@@ -125,7 +125,7 @@ export default function SOSScreen() {
           }).start();
         }
       }, 1000);
-      
+
       return true;
     } catch (e) {
       console.error("[SOS] Start recording failed", e);
@@ -139,7 +139,7 @@ export default function SOSScreen() {
       clearInterval(timerRef.current);
       timerRef.current = null;
     }
-    
+
     const recording = recordingRef.current;
     if (!recording) {
       console.warn("[SOS] No active recording found");
@@ -179,7 +179,7 @@ export default function SOSScreen() {
       }
 
       addTimelineEvent('Uploading audio to server', 'PROCESSING');
-      
+
       const { data, error: uploadError } = await supabase.storage
         .from('audio')
         .upload(fileName, fileBody, fileOptions);
@@ -205,7 +205,7 @@ export default function SOSScreen() {
       recordingRef.current = null;
       setRecordingTime(0);
       progressAnim.setValue(0);
-      
+
       addTimelineEvent('Audio uploaded successfully', 'SUCCESS');
       return publicUrl;
     } catch (err) {
@@ -219,7 +219,7 @@ export default function SOSScreen() {
   const getCurrentLocation = async () => {
     try {
       addTimelineEvent('Getting current location', 'PROCESSING');
-      
+
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
         throw new Error('Location permission denied');
@@ -234,7 +234,7 @@ export default function SOSScreen() {
         longitude: location.coords.longitude,
         accuracy: location.coords.accuracy,
       };
-      
+
       setLocation(coords);
       addTimelineEvent('Location acquired', 'SUCCESS');
       return coords;
@@ -246,7 +246,7 @@ export default function SOSScreen() {
 
   const handleSOS = async () => {
     if (isActive) return; // Prevent multiple activations
-    
+
     setIsActive(true);
     setStatusTimeline([]); // Clear previous timeline
     addTimelineEvent('SOS activation initiated', 'PROCESSING');
@@ -275,18 +275,18 @@ export default function SOSScreen() {
       // Step 6: Save SOS event
       setStatus('Saving Emergency Data');
       addTimelineEvent('Saving emergency event to database', 'PROCESSING');
-      
+
       await saveSOSEvent(
-        user.id, 
-        locationData.latitude, 
-        locationData.longitude, 
+        user.id,
+        locationData.latitude,
+        locationData.longitude,
         audioUrl
       );
 
       // Success
       setStatus('Emergency Alert Sent');
       addTimelineEvent('SOS alert successfully sent! Emergency services notified.', 'SUCCESS');
-      
+
       // Show success alert
       Alert.alert(
         '🚨 Emergency Alert Sent',
@@ -304,7 +304,7 @@ export default function SOSScreen() {
       console.error('SOS Error:', error);
       setStatus('Failed');
       addTimelineEvent(`Failed: ${error.message}`, 'ERROR');
-      
+
       Alert.alert(
         '⚠️ SOS Failed',
         error.message || 'Failed to send emergency alert. Please try again.',
@@ -337,7 +337,7 @@ export default function SOSScreen() {
       clearInterval(timerRef.current);
       timerRef.current = null;
     }
-    
+
     if (recordingRef.current) {
       try {
         await recordingRef.current.stopAndUnloadAsync();
@@ -346,7 +346,7 @@ export default function SOSScreen() {
       }
       recordingRef.current = null;
     }
-    
+
     setIsActive(false);
     setStatus('Ready');
     setRecordingTime(0);
@@ -364,9 +364,106 @@ export default function SOSScreen() {
     return statusType.color;
   };
 
+  // Quick SOS - Send location without audio recording
+  const handleQuickSOS = async () => {
+    if (isActive) return;
+
+    Alert.alert(
+      '⚡ Quick SOS Alert',
+      'Send emergency alert with your location only (no audio recording)?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Send Now',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              setIsActive(true);
+              setStatus('Sending Quick Alert');
+              addTimelineEvent('Quick SOS initiated', 'PROCESSING');
+
+              // Get location
+              const locationData = await getCurrentLocation();
+
+              // Save SOS event without audio
+              addTimelineEvent('Saving emergency alert', 'PROCESSING');
+              await saveSOSEvent(
+                user.id,
+                locationData.latitude,
+                locationData.longitude,
+                null // No audio URL
+              );
+
+              setStatus('Quick Alert Sent');
+              addTimelineEvent('✅ Quick SOS sent successfully!', 'SUCCESS');
+
+              Alert.alert(
+                '✅ Alert Sent',
+                'Your emergency location has been sent successfully.',
+                [{ text: 'OK', onPress: () => setIsActive(false) }]
+              );
+            } catch (error) {
+              console.error('Quick SOS Error:', error);
+              setStatus('Failed');
+              addTimelineEvent(`Failed: ${error.message}`, 'ERROR');
+              Alert.alert('Error', 'Failed to send quick alert. Please try again.');
+              setIsActive(false);
+            }
+          },
+        },
+      ]
+    );
+  };
+
+  // Emergency Call - Direct dial to emergency services
+  const handleEmergencyCall = () => {
+    Alert.alert(
+      '📞 Emergency Call',
+      'Call emergency services now?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Call 911',
+          style: 'destructive',
+          onPress: () => {
+            const { Linking } = require('react-native');
+            Linking.openURL('tel:911').catch(err => {
+              console.error('Error making call:', err);
+              Alert.alert('Error', 'Unable to make call. Please dial 911 manually.');
+            });
+          },
+        },
+      ]
+    );
+  };
+
+  // Share Location - Share current location via SMS or other apps
+  const handleShareLocation = async () => {
+    try {
+      addTimelineEvent('Getting location to share', 'PROCESSING');
+      const locationData = await getCurrentLocation();
+
+      const message = `🚨 EMERGENCY LOCATION ALERT 🚨\n\nI need help! My current location:\n\nLatitude: ${locationData.latitude}\nLongitude: ${locationData.longitude}\n\nGoogle Maps: https://maps.google.com/?q=${locationData.latitude},${locationData.longitude}\n\nPlease send help immediately!`;
+
+      const { Share } = require('react-native');
+      await Share.share({
+        message: message,
+        title: 'Emergency Location',
+      });
+
+      addTimelineEvent('Location shared', 'SUCCESS');
+    } catch (error) {
+      console.error('Share location error:', error);
+      if (error.message !== 'User did not share') {
+        Alert.alert('Error', 'Failed to share location. Please try again.');
+      }
+    }
+  };
+
+
   return (
     <SafeAreaView style={styles.safeArea}>
-      <ScrollView 
+      <ScrollView
         style={styles.container}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
@@ -381,16 +478,16 @@ export default function SOSScreen() {
 
         {/* SOS Button */}
         <View style={styles.sosButtonContainer}>
-          <Animated.View 
+          <Animated.View
             style={[
               styles.sosPulse,
               {
                 transform: [{ scale: pulseAnim }],
                 opacity: isActive ? 0.6 : 0,
               }
-            ]} 
+            ]}
           />
-          
+
           <TouchableOpacity
             style={[
               styles.sosButton,
@@ -401,10 +498,10 @@ export default function SOSScreen() {
             disabled={isActive}
             activeOpacity={0.9}
           >
-            <Ionicons 
-              name="alert-circle" 
-              size={60} 
-              color={isActive ? "#ef4444" : "#fff"} 
+            <Ionicons
+              name="alert-circle"
+              size={60}
+              color={isActive ? "#ef4444" : "#fff"}
             />
             <Text style={styles.sosButtonText}>
               {isActive ? 'SENDING ALERT...' : 'ACTIVATE SOS'}
@@ -418,7 +515,7 @@ export default function SOSScreen() {
                 Recording: {recordingTime}s / 10s
               </Text>
               <View style={styles.progressBar}>
-                <Animated.View 
+                <Animated.View
                   style={[
                     styles.progressFill,
                     {
@@ -427,21 +524,55 @@ export default function SOSScreen() {
                         outputRange: ['0%', '100%'],
                       }),
                     }
-                  ]} 
+                  ]}
                 />
               </View>
             </View>
           )}
         </View>
 
+        {/* Quick Actions */}
+        <View style={styles.quickActionsContainer}>
+          <Text style={styles.quickActionsTitle}>Quick Actions</Text>
+          <View style={styles.quickActionsGrid}>
+            <TouchableOpacity
+              style={[styles.quickActionButton, styles.quickSOSButton]}
+              onPress={handleQuickSOS}
+              disabled={isActive}
+            >
+              <Ionicons name="flash" size={28} color="#f59e0b" />
+              <Text style={styles.quickActionLabel}>Quick SOS</Text>
+              <Text style={styles.quickActionSubtext}>Location Only</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[styles.quickActionButton, styles.callButton]}
+              onPress={handleEmergencyCall}
+            >
+              <Ionicons name="call" size={28} color="#ef4444" />
+              <Text style={styles.quickActionLabel}>Call 911</Text>
+              <Text style={styles.quickActionSubtext}>Direct Dial</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[styles.quickActionButton, styles.shareButton]}
+              onPress={handleShareLocation}
+            >
+              <Ionicons name="share-social" size={28} color="#3b82f6" />
+              <Text style={styles.quickActionLabel}>Share Location</Text>
+              <Text style={styles.quickActionSubtext}>Via SMS/Apps</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
         {/* Current Status */}
         <View style={styles.statusContainer}>
           <Text style={styles.statusTitle}>Current Status</Text>
           <View style={[styles.statusCard, isActive && styles.statusCardActive]}>
-            <Ionicons 
-              name={isActive ? "radio" : "shield-checkmark"} 
-              size={24} 
-              color={isActive ? "#ef4444" : "#10b981"} 
+            <Ionicons
+              name={isActive ? "radio" : "shield-checkmark"}
+              size={24}
+              color={isActive ? "#ef4444" : "#10b981"}
             />
             <Text style={[
               styles.statusText,
@@ -480,10 +611,10 @@ export default function SOSScreen() {
                       styles.timelineIcon,
                       { backgroundColor: getStatusColor(event.type) }
                     ]}>
-                      <Ionicons 
-                        name={getStatusIcon(event.type)} 
-                        size={16} 
-                        color="#fff" 
+                      <Ionicons
+                        name={getStatusIcon(event.type)}
+                        size={16}
+                        color="#fff"
                       />
                     </View>
                     {index < statusTimeline.length - 1 && (
@@ -796,5 +927,58 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#374151',
     flex: 1,
+  },
+  // Quick Actions Styles
+  quickActionsContainer: {
+    marginBottom: 24,
+  },
+  quickActionsTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#374151',
+    marginBottom: 16,
+  },
+  quickActionsGrid: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  quickActionButton: {
+    flex: 1,
+    backgroundColor: '#fff',
+    padding: 16,
+    borderRadius: 12,
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: '#e5e7eb',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  quickSOSButton: {
+    borderColor: '#fef3c7',
+    backgroundColor: '#fffbeb',
+  },
+  callButton: {
+    borderColor: '#fecaca',
+    backgroundColor: '#fef2f2',
+  },
+  shareButton: {
+    borderColor: '#dbeafe',
+    backgroundColor: '#eff6ff',
+  },
+  quickActionLabel: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#374151',
+    marginTop: 8,
+    textAlign: 'center',
+  },
+  quickActionSubtext: {
+    fontSize: 10,
+    color: '#6b7280',
+    marginTop: 2,
+    textAlign: 'center',
   },
 });

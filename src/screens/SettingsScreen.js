@@ -49,11 +49,11 @@ export default function SettingsScreen({ navigation }) {
             if (savedSettings) {
                 setSettings(JSON.parse(savedSettings));
             }
-            
+
             // Check actual permissions
             const notificationStatus = await Notifications.getPermissionsAsync();
             const locationStatus = await Location.getForegroundPermissionsAsync();
-            
+
             setSettings(prev => ({
                 ...prev,
                 notifications: notificationStatus.granted || notificationStatus.ios?.status === 1,
@@ -68,7 +68,7 @@ export default function SettingsScreen({ navigation }) {
 
     const loadProfileData = async () => {
         if (!user) return;
-        
+
         setProfileData({
             name: user.user_metadata?.name || '',
             email: user.email || '',
@@ -80,14 +80,14 @@ export default function SettingsScreen({ navigation }) {
         try {
             await AsyncStorage.setItem('app_settings', JSON.stringify(newSettings));
             setSettings(newSettings);
-            
+
             // Apply some settings in real-time
             if (newSettings.locationServices !== settings.locationServices) {
                 if (newSettings.locationServices) {
                     await Location.requestForegroundPermissionsAsync();
                 }
             }
-            
+
             if (newSettings.notifications !== settings.notifications) {
                 if (newSettings.notifications) {
                     await Notifications.requestPermissionsAsync();
@@ -122,18 +122,18 @@ export default function SettingsScreen({ navigation }) {
                         try {
                             // Clear various cache items
                             const keys = await AsyncStorage.getAllKeys();
-                            const cacheKeys = keys.filter(key => 
-                                key.startsWith('cache_') || 
+                            const cacheKeys = keys.filter(key =>
+                                key.startsWith('cache_') ||
                                 key.includes('temp') ||
                                 key === 'app_settings' // Preserve settings
                             );
-                            
+
                             for (const key of cacheKeys) {
                                 if (key !== 'app_settings') {
                                     await AsyncStorage.removeItem(key);
                                 }
                             }
-                            
+
                             Alert.alert('Success', 'Cache cleared successfully');
                         } catch (error) {
                             console.error('Error clearing cache:', error);
@@ -211,13 +211,13 @@ export default function SettingsScreen({ navigation }) {
         try {
             // Simulate sending feedback
             await new Promise(resolve => setTimeout(resolve, 1000));
-            
+
             Alert.alert(
                 'Thank You!',
                 'Your feedback has been submitted successfully.',
                 [{ text: 'OK', onPress: () => setFeedbackModal(false) }]
             );
-            
+
             setFeedbackText('');
         } catch (error) {
             console.error('Error sending feedback:', error);
@@ -232,29 +232,31 @@ export default function SettingsScreen({ navigation }) {
             ios: 'https://apps.apple.com/app/idYOUR_APP_ID',
             android: 'market://details?id=com.yourcompany.safesafar',
         });
-        
+
         Linking.openURL(storeUrl).catch(() => {
             Alert.alert('Error', 'Could not open app store');
         });
     };
 
     const handlePrivacyPolicy = () => {
-        Linking.openURL('https://safesafar.com/privacy').catch(() => {
-            Alert.alert('Error', 'Could not open privacy policy');
-        });
+        Alert.alert(
+            'Privacy Policy',
+            'SafeSafar Privacy Policy\n\nWe are committed to protecting your privacy and ensuring the security of your personal information.\n\nKey Points:\n• Location data is only used for safety features\n• Audio recordings are encrypted\n• Your data is never sold to third parties\n• You can delete your data at any time\n\nFor full details, contact support@safesafar.com'
+        );
     };
 
     const handleTermsOfService = () => {
-        Linking.openURL('https://safesafar.com/terms').catch(() => {
-            Alert.alert('Error', 'Could not open terms of service');
-        });
+        Alert.alert(
+            'Terms of Service',
+            'SafeSafar Terms of Service\n\nBy using SafeSafar, you agree to:\n• Use the app for personal safety purposes only\n• Provide accurate information\n• Not misuse emergency features\n• Comply with local laws and regulations\n\nFor full terms, contact support@safesafar.com'
+        );
     };
 
     const handleContactSupport = () => {
         const supportEmail = 'support@safesafar.com';
         const subject = encodeURIComponent('SafeSafar Support');
         const body = encodeURIComponent(`User ID: ${user?.id}\n\nIssue Description:\n\n`);
-        
+
         Linking.openURL(`mailto:${supportEmail}?subject=${subject}&body=${body}`).catch(() => {
             Alert.alert('Error', 'Could not open email client');
         });
@@ -330,14 +332,14 @@ export default function SettingsScreen({ navigation }) {
         );
     };
 
-    const SettingItem = ({ 
-        icon, 
-        title, 
-        description, 
-        value, 
-        onToggle, 
+    const SettingItem = ({
+        icon,
+        title,
+        description,
+        value,
+        onToggle,
         iconColor = '#3b82f6',
-        disabled = false 
+        disabled = false
     }) => (
         <View style={[styles.settingItem, disabled && styles.settingItemDisabled]}>
             <View style={[styles.settingIcon, { backgroundColor: `${iconColor}20` }]}>
@@ -357,11 +359,11 @@ export default function SettingsScreen({ navigation }) {
         </View>
     );
 
-    const SelectItem = ({ 
-        icon, 
-        title, 
-        description, 
-        value, 
+    const SelectItem = ({
+        icon,
+        title,
+        description,
+        value,
         options,
         onSelect,
         iconColor = '#3b82f6'
@@ -381,14 +383,14 @@ export default function SettingsScreen({ navigation }) {
         </TouchableOpacity>
     );
 
-    const ActionItem = ({ 
-        icon, 
-        title, 
-        description, 
-        onPress, 
-        iconColor = '#3b82f6', 
+    const ActionItem = ({
+        icon,
+        title,
+        description,
+        onPress,
+        iconColor = '#3b82f6',
         danger = false,
-        arrow = true 
+        arrow = true
     }) => (
         <TouchableOpacity style={styles.actionItem} onPress={onPress}>
             <View style={[styles.settingIcon, { backgroundColor: `${iconColor}20` }]}>
@@ -563,7 +565,7 @@ export default function SettingsScreen({ navigation }) {
                         icon="navigate"
                         title="Route Optimization"
                         description="Choose route calculation method"
-                        value={settings.routeOptimization.charAt(0).toUpperCase() + settings.routeOptimization.slice(1)}
+                        value={settings.routeOptimization ? settings.routeOptimization.charAt(0).toUpperCase() + settings.routeOptimization.slice(1) : 'Safe'}
                         onSelect={handleRouteOptimizationSelect}
                         iconColor="#10b981"
                     />
@@ -571,7 +573,7 @@ export default function SettingsScreen({ navigation }) {
                         icon="map"
                         title="Map Style"
                         description="Choose your preferred map view"
-                        value={settings.mapStyle.charAt(0).toUpperCase() + settings.mapStyle.slice(1)}
+                        value={settings.mapStyle ? settings.mapStyle.charAt(0).toUpperCase() + settings.mapStyle.slice(1) : 'Standard'}
                         onSelect={handleMapStyleSelect}
                         iconColor="#3b82f6"
                     />
@@ -724,19 +726,19 @@ export default function SettingsScreen({ navigation }) {
                     <View style={styles.modalContainer}>
                         <View style={styles.modalHeader}>
                             <Text style={styles.modalTitle}>Send Feedback</Text>
-                            <TouchableOpacity 
+                            <TouchableOpacity
                                 onPress={() => !sendingFeedback && setFeedbackModal(false)}
                                 disabled={sendingFeedback}
                             >
                                 <Ionicons name="close" size={24} color="#6b7280" />
                             </TouchableOpacity>
                         </View>
-                        
+
                         <View style={styles.modalContent}>
                             <Text style={styles.modalDescription}>
                                 Your feedback helps us improve SafeSafar. What can we do better?
                             </Text>
-                            
+
                             <TextInput
                                 style={styles.feedbackInput}
                                 placeholder="Type your feedback here..."
@@ -748,7 +750,7 @@ export default function SettingsScreen({ navigation }) {
                                 textAlignVertical="top"
                                 editable={!sendingFeedback}
                             />
-                            
+
                             <TouchableOpacity
                                 style={[styles.submitButton, sendingFeedback && styles.submitButtonDisabled]}
                                 onPress={handleSubmitFeedback}
