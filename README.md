@@ -196,6 +196,24 @@ Shreya Jadhav
 
 Madhura Barve
 
+## Glimpse of Project
+ ## 📸 Application Screenshots
+
+| Screen Name | Description | Screenshot |
+|------------|-------------|------------|
+| Login Screen | User authentication and app entry point | ![Login Screen](screenshots/login.png) |
+| Home Dashboard | Central hub with SOS, navigation, and safety options | ![Home Dashboard](screenshots/home.png) |
+| Emergency SOS Screen | One-tap SOS activation with emergency actions | ![SOS Screen](screenshots/sos.png) |
+| Quick SOS | Location-only emergency alert | ![Quick SOS](screenshots/quick_sos.png) |
+| Incident Reporting | Anonymous incident submission with category selection | ![Incident Reporting](screenshots/report_incident.png) |
+| Incident Categories | Selection of incident types | ![Incident Categories](screenshots/incident_categories.png) |
+| Safe Route Navigation | Route guidance avoiding unsafe areas | ![Safe Route](screenshots/safe_route.png) |
+| Safety Checkpoints | Nearby police stations and safe locations | ![Safety Checkpoints](screenshots/checkpoints.png) |
+| Safety Tips | Preventive safety guidelines and awareness content | ![Safety Tips](screenshots/safety_tips.png) |
+| Emergency Contacts | Quick access to saved emergency contacts | ![Emergency Contacts](screenshots/emergency_contacts.png) |
+| Incident History | Timeline of past SOS and reported incidents | ![Incident History](screenshots/incident_history.png) |
+| Settings | Account management and privacy controls | ![Settings](screenshots/settings.png) |
+
 ⚠️ Disclaimer
 
 SafeSafar is a supportive safety tool and does not replace official emergency services.
