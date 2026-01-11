@@ -13,7 +13,9 @@
   https://github.com/Pranav-chaudhari-2006/SafeSafar
 
 - **Status:** Functional 
-  APK Link: https://expo.dev/artifacts/eas/whK5wZgraHFNDXXCtZirjN.apk 
+  APK Link: https://expo.dev/artifacts/eas/whK5wZgraHFNDXXCtZirjN.apk
+  Online Web Emulator Link : https://appetize.io/app/b_hejwjrjd2zjjd3t6qbkpb3vepa
+  Vercel Link : https://safesafar-prototype.vercel.app/
 - **Platform:** Android (React Native – Expo)
 
 ---
