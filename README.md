@@ -1,5 +1,5 @@
 # 🛡️ SafeSafar  
-### AI-Powered Women’s Safety Application  
+### AI-Powered Women’s Safety Mobile Application  
 
 **Theme:** AI for Societal Good  
 **Buildathon:** OpenAI × NxtWave  
