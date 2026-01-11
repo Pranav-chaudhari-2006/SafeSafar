@@ -118,8 +118,6 @@ All essential safety tools are integrated into one application.
 ## Implemented Screens
 
 - Login and Google Authentication
-  <img width="540" height="1230" alt="image" src="https://github.com/user-attachments/assets/dbc87c86-da95-46f8-9676-d79a364e91e2" />
-
 - Home Dashboard
 - Emergency SOS Screen
 - Incident Reporting Flow
