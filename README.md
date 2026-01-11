@@ -202,24 +202,24 @@ Madhura Barve
 
 | Screen Name | Description | Screenshot |
 |------------|-------------|------------|
-| Login Screen | User authentication and entry point | ![Login](screenshots/login.jpeg) |
-| Home Dashboard (Main) | Home screen with emergency actions and safety tools | ![Home](screenshots/home1.jpeg) |
-| Home Dashboard (Extended) | Community, resources, and account options | ![Home Extended](screenshots/home2.jpeg) |
-| Emergency SOS Screen | SOS activation and emergency quick actions | ![SOS](screenshots/sos1.jpeg) |
-| SOS Status Screen | SOS system status and timeline view | ![SOS Status](screenshots/sos2.jpeg) |
-| Incident Reporting (Step 1) | Incident type selection | ![Report Incident](screenshots/reportincident1.jpeg) |
-| Incident Reporting (Step 2) | Incident details and location submission | ![Report Incident Details](screenshots/reportincident2.jpeg) |
-| Safe Route Navigation | Navigation with safe route suggestions | ![Safe Route](screenshots/saferoutenavigation1.jpeg) |
-| Safety Checkpoints | Nearby police stations and safe locations | ![Safety Checkpoints](screenshots/safecheckpoints.jpeg) |
-| Safety Tips | Safety guidelines and awareness content | ![Safety Tips](screenshots/safetytips1.jpeg) |
-| Safety Network | Trusted contacts and safety network | ![Safety Network](screenshots/safetynetworks.jpeg) |
-| Emergency Contacts | Quick access to emergency contact numbers | ![Emergency Contacts](screenshots/emergencycontacts.jpeg) |
-| Incident History | Timeline of past SOS and incident reports | ![Incident History](screenshots/incident_history.jpeg) |
-| Settings (Profile & Preferences) | User profile and application settings | ![Settings](screenshots/settings1.jpeg) |
-| Settings (Privacy Controls) | Privacy and permission management | ![Settings Privacy](screenshots/settings2.jpeg) |
-| Settings (Notifications) | Notification and alert preferences | ![Settings Notifications](screenshots/settings3.jpeg) |
-| Settings (Security) | Account security options | ![Settings Security](screenshots/settings4.jpeg) |
-| Settings (App Info) | App information and additional options | ![Settings Info](screenshots/settings5.jpeg) |
+| Login Screen | User authentication and entry point | ![Login](login.jpeg) |
+| Home Dashboard (Main) | Home screen with emergency actions and safety tools | ![Home](home1.jpeg) |
+| Home Dashboard (Extended) | Community, resources, and account options | ![Home Extended](home2.jpeg) |
+| Emergency SOS Screen | SOS activation and emergency quick actions | ![SOS](sos1.jpeg) |
+| SOS Status Screen | SOS system status and timeline view | ![SOS Status](sos2.jpeg) |
+| Incident Reporting (Step 1) | Incident type selection | ![Report Incident](reportincident1.jpeg) |
+| Incident Reporting (Step 2) | Incident details and location submission | ![Report Incident Details](reportincident2.jpeg) |
+| Safe Route Navigation | Navigation with safe route suggestions | ![Safe Route](saferoutenavigation1.jpeg) |
+| Safety Checkpoints | Nearby police stations and safe locations | ![Safety Checkpoints](safecheckpoints.jpeg) |
+| Safety Tips | Safety guidelines and awareness content | ![Safety Tips](safetytips1.jpeg) |
+| Safety Network | Trusted contacts and safety network | ![Safety Network](safetynetworks.jpeg) |
+| Emergency Contacts | Quick access to emergency contact numbers | ![Emergency Contacts](emergencycontacts.jpeg) |
+| Incident History | Timeline of past SOS and incident reports | ![Incident History](incident_history.jpeg) |
+| Settings (Profile & Preferences) | User profile and application settings | ![Settings](settings1.jpeg) |
+| Settings (Privacy Controls) | Privacy and permission management | ![Settings Privacy](settings2.jpeg) |
+| Settings (Notifications) | Notification and alert preferences | ![Settings Notifications](settings3.jpeg) |
+| Settings (Security) | Account security options | ![Settings Security](settings4.jpeg) |
+| Settings (App Info) | App information and additional options | ![Settings Info](settings5.jpeg) |
 
 ---
 
