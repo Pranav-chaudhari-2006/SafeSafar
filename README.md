@@ -210,7 +210,7 @@ Madhura Barve
 | Incident Reporting (Step 1) | Incident type selection | ![Report Incident](reportincident1.jpeg) |
 | Incident Reporting (Step 2) | Incident details and location submission | ![Report Incident Details](reportincident2.jpeg) |
 | Safe Route Navigation | Navigation with safe route suggestions | ![Safe Route](saferoutenavigation1.jpeg) |
-| Safety Checkpoints | Nearby police stations and safe locations | ![Safety Checkpoints](safecheckpoints.jpeg) |
+| Safety Checkpoints | Nearby police stations and safe locations | ![Safety Checkpoints](safechechpoints.jpeg) |
 | Safety Tips | Safety guidelines and awareness content | ![Safety Tips](safetytips1.jpeg) |
 | Safety Network | Trusted contacts and safety network | ![Safety Network](safetynetworks.jpeg) |
 | Emergency Contacts | Quick access to emergency contact numbers | ![Emergency Contacts](emergencycontacts.jpeg) |
