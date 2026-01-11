@@ -11,6 +11,7 @@ import ProfileScreen from '../screens/ProfileScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import SafetyNetworkScreen from '../screens/SafetyNetworkScreen';
 import CheckInScreen from '../screens/CheckInScreen';
+import SafetyTipsScreen from '../screens/SafetyTipsScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -29,6 +30,7 @@ export default function AppNavigator() {
       <Stack.Screen name="Settings" component={SettingsScreen} />
       <Stack.Screen name="SafetyNetwork" component={SafetyNetworkScreen} />
       <Stack.Screen name="CheckIn" component={CheckInScreen} />
+      <Stack.Screen name="SafetyTips" component={SafetyTipsScreen} />
     </Stack.Navigator>
   );
 }
