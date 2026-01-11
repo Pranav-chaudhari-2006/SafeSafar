@@ -216,10 +216,14 @@ Madhura Barve
 | Incident History | Timeline of past SOS and reported incidents | ![Incident History](screenshots/incident_history.png) |
 | Settings | Account management and privacy controls | ![Settings](screenshots/settings.png) |
 
+---
+
 ⚠️ Disclaimer
 
 SafeSafar is a supportive safety tool and does not replace official emergency services.
 Always contact local authorities in critical situations.
+
+---
 
 ### Steps
 
