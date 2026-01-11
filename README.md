@@ -54,22 +54,12 @@ The solution prioritizes:
 
 ## ✨ Core Features (Implemented)
 
-### Login and Goggle Authentication
-
-<img width="540" height="1181" alt="image" src="https://github.com/user-attachments/assets/f6045eb7-ded6-42ed-9e6c-f0ed93bf8ad1" />
-
-
 ### 🚨 Emergency SOS
 - One-tap emergency SOS activation  
 - Quick SOS (location-only alert)  
 - Automatic audio recording during emergencies  
 - Live location sharing with trusted contacts  
-- Direct emergency calling
-
-<img width="540" height="1038" alt="image" src="https://github.com/user-attachments/assets/51910e88-0526-45c8-9389-f14d6510f889" />
-
-<img width="540" height="1230" alt="image" src="https://github.com/user-attachments/assets/d8edbf26-d367-4848-ae9b-b1e89fd1151e" />
-
+- Direct emergency calling  
 
 ---
 
@@ -79,11 +69,6 @@ The solution prioritizes:
 - Categorized incidents (harassment, unsafe area, theft, etc.)  
 - Community-visible reports to improve safety awareness  
 
-![WhatsApp Image 2026-01-11 at 11 49 09 AM](https://github.com/user-attachments/assets/7b718c64-5052-4af0-b2ce-6ce4790d91f8)
-
-<img width="540" height="1230" alt="image" src="https://github.com/user-attachments/assets/92d1a22a-bac4-456a-ab22-6e4d7df47c4b" />
-
-
 ---
 
 ### 🗺️ Safe Route Navigation
@@ -91,16 +76,12 @@ The solution prioritizes:
 - Avoid routes passing through reported unsafe areas  
 - Supports walking, driving, and biking modes  
 
-![WhatsApp Image 2026-01-11 at 11 50 01 AM](https://github.com/user-attachments/assets/5a452da9-7807-48ef-a513-33573b9879e3)
-
 ---
 
 ### 📍 Safety Checkpoints
 - Discover nearby police stations  
 - Locate safe zones and help centers  
 - Quick navigation to emergency-safe locations  
-<img width="540" height="1230" alt="image" src="https://github.com/user-attachments/assets/0997508d-01be-4c04-aea4-415403fd90d8" />
-
 
 ---
 
@@ -108,32 +89,25 @@ The solution prioritizes:
 - Curated safety guidelines and best practices  
 - Preventive awareness content  
 - Guidance for handling risky situations  
-![WhatsApp Image 2026-01-11 at 11 51 05 AM](https://github.com/user-attachments/assets/92a5f697-33fc-4b5d-b26d-ed3fd3f9a8df)
-
 
 ---
 
 ### 👥 Safety Network
-- Trusted contact network
-![WhatsApp Image 2026-01-11 at 11 51 05 AM](https://github.com/user-attachments/assets/09b38a20-26dd-42f0-89a6-5f723342a4ce)
-
+- Trusted contact network  
   
 ---
 
 ### 📞 Emergency Contacts
 - One-tap access to emergency contact numbers  
 - Easy management of saved contacts  
-- Rapid calling during critical situations
-  ![WhatsApp Image 2026-01-11 at 11 51 48 AM](https://github.com/user-attachments/assets/f3666040-5c1b-43c8-be95-00396b6b1996)
-
+- Rapid calling during critical situations  
 
 ---
 
 ### 🕘 Incident History
 - View past SOS activations  
 - Track previously reported incidents  
-- Timeline-based personal safety history
-
+- Timeline-based personal safety history  
 
 ---
 
@@ -190,23 +164,6 @@ The following enhancements are planned for future iterations:
 
 ---
 
-## 🗂️ Project Structure
-SafeSafar-Prototype/
-│
-├── assets/ # Images & static assets
-├── src/
-│ ├── screens/ # Application screens
-│ ├── components/ # Reusable UI components
-│ ├── services/ # Backend & API logic
-│
-├── complete_schema.sql # Database schema
-├── App.js # App entry point
-├── index.js # Root file
-├── app.json # Expo configuration
-├── package.json # Dependencies
-
----
-
 ## ⚙️ Installation & Setup
 
 ### Prerequisites
@@ -215,11 +172,7 @@ SafeSafar-Prototype/
 - Supabase project  
 - Google Maps API key  
 
-### Steps
-git clone https://github.com/Pranav-chaudhari-2006/SafeSafar-Prototype
-cd SafeSafar-Prototype
-npm install
-expo start
+---
 
 🌍 Impact
 
@@ -247,3 +200,11 @@ Madhura Barve
 
 SafeSafar is a supportive safety tool and does not replace official emergency services.
 Always contact local authorities in critical situations.
+
+### Steps
+
+```bash
+git clone https://github.com/Pranav-chaudhari-2006/SafeSafar-Prototype
+cd SafeSafar-Prototype
+npm install
+expo start
