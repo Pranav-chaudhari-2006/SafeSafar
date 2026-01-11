@@ -10,7 +10,7 @@
 ## 🚀 Live Project
 
 - **GitHub Repository:**  
-  https://github.com/Pranav-chaudhari-2006/SafeSafar-Prototype  
+  https://github.com/Pranav-chaudhari-2006/SafeSafar
 
 - **Status:** Deployed & Functional  
 - **Platform:** Android (React Native – Expo)
