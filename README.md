@@ -233,7 +233,7 @@ Always contact local authorities in critical situations.
 ### Steps
 
 ```bash
-git clone https://github.com/Pranav-chaudhari-2006/SafeSafar-Prototype
-cd SafeSafar-Prototype
+git clone https://github.com/Pranav-chaudhari-2006/SafeSafar
+cd SafeSafar
 npm install
 expo start
