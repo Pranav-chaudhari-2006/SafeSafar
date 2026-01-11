@@ -2,7 +2,7 @@
 ### AI-Powered Women’s Safety Application  
 **Theme:** AI for Societal Good  
 **Buildathon:** OpenAI × NxtWave  
-**Team Name:** TechVerse  
+**Team Name:** Techspire
 
 ---
 
