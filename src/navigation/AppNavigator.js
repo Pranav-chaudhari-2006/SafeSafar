@@ -12,6 +12,7 @@ import SettingsScreen from '../screens/SettingsScreen';
 import SafetyNetworkScreen from '../screens/SafetyNetworkScreen';
 import CheckInScreen from '../screens/CheckInScreen';
 import SafetyTipsScreen from '../screens/SafetyTipsScreen';
+import FakeCallScreen from '../screens/FakeCallScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -31,6 +32,7 @@ export default function AppNavigator() {
       <Stack.Screen name="SafetyNetwork" component={SafetyNetworkScreen} />
       <Stack.Screen name="CheckIn" component={CheckInScreen} />
       <Stack.Screen name="SafetyTips" component={SafetyTipsScreen} />
+      <Stack.Screen name="FakeCall" component={FakeCallScreen} options={{ title: 'Fake Call' }} />
     </Stack.Navigator>
   );
 }

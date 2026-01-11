@@ -141,6 +141,13 @@ export default function HomeScreen({ navigation }) {
             onPress={() => navigation.navigate('SafetyCheckpoints')}
           />
           <MenuCard
+            icon="call-outline"
+            title="Fake Call"
+            description="Simulate incoming call for safety"
+            color="#a855f7"
+            onPress={() => navigation.navigate('FakeCall')}
+          />
+          <MenuCard
             icon="shield"
             title="Safety Tips"
             description="Learn safety best practices"
@@ -206,7 +213,7 @@ export default function HomeScreen({ navigation }) {
         </View>
       </ScrollView>
 
-      
+
     </SafeAreaView>
   );
 }
