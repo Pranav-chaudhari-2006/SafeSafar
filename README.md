@@ -22,9 +22,11 @@
   
 - **Platform:** Android (React Native – Expo)
 
-### Demo Credentials 
-Username : test@gmail.com
-password : Test123
+## Demo Credentials   
+ Username : test@gmail.com
+ 
+ password : Test123
+ 
 ---
 
 ## 🧩 Overview
