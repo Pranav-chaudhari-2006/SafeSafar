@@ -1,5 +1,5 @@
 # 🛡️ SafeSafar  
-### AI-Powered Women’s Safety Mobile Application  
+### AI-Powered Safety Mobile Application  
 
 **Theme:** AI for Societal Good  
 **Buildathon:** OpenAI × NxtWave  
@@ -19,7 +19,7 @@
 
 ## 🧩 Overview
 
-**SafeSafar** is a unified, AI-powered women’s safety application designed to provide **instant emergency assistance, safe navigation, and community-driven protection**.
+**SafeSafar** is a unified, AI-powered safety application designed to provide **instant emergency assistance, safe navigation, and community-driven protection**.
 
 Unlike traditional safety applications that react after an incident occurs, SafeSafar focuses on **prevention, discretion, and real-time response**, empowering women during everyday activities such as commuting, traveling alone, or navigating unfamiliar areas.
 
