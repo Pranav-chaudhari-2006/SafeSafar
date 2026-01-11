@@ -12,7 +12,7 @@
 - **GitHub Repository:**  
   https://github.com/Pranav-chaudhari-2006/SafeSafar
 
-- **Status:** Functional  
+- **Status:** Functional & Deployed : https://expo.dev/artifacts/eas/whK5wZgraHFNDXXCtZirjN.apk 
 - **Platform:** Android (React Native – Expo)
 
 ---
