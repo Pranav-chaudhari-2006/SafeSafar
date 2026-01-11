@@ -5,15 +5,25 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const OPENROUTER_API_KEY = process.env.EXPO_PUBLIC_OPENROUTER_API_KEY;
 const API_URL = 'https://openrouter.ai/api/v1/chat/completions';
 const CACHE_EXPIRY = 60 * 60 * 1000; // 1 hour
+const API_TIMEOUT = 15000; // 15 seconds timeout
+let lastSuccessfulModel = null; // Cache the last working model
 
 // List of free models to cycle through for redundancy
 const FREE_MODELS = [
     'google/gemini-2.0-flash-exp:free',
-    'meta-llama/llama-3-8b-instruct:free',
     'mistralai/mistral-7b-instruct:free',
-    'huggingfaceh4/zephyr-7b-beta:free',
-    'microsoft/phi-3-mini-128k-instruct:free'
+    'nousresearch/hermes-3-llama-3.1-405b:free',
+    'meta-llama/llama-3.2-3b-instruct:free',
+    'qwen/qwen-2-7b-instruct:free'
 ];
+
+// Fallback to low-cost paid models if free ones are rate-limited
+const PAID_MODELS = [
+    'google/gemini-flash-1.5', // Very cheap, reliable
+    'openai/gpt-3.5-turbo',    // Affordable, fast
+];
+
+const ALL_MODELS = [...FREE_MODELS, ...PAID_MODELS];
 
 // Helper to check cache
 const getCachedData = async (key) => {
@@ -37,6 +47,16 @@ const setCachedData = async (key, data) => {
             data
         }));
     } catch (e) { console.log('Cache write error', e); }
+};
+
+// Helper to add timeout to fetch requests
+const fetchWithTimeout = (url, options, timeout = API_TIMEOUT) => {
+    return Promise.race([
+        fetch(url, options),
+        new Promise((_, reject) =>
+            setTimeout(() => reject(new Error('Request timeout')), timeout)
+        )
+    ]);
 };
 
 export const getSafetyTips = async (latitude, longitude) => {
@@ -107,11 +127,18 @@ async function callOpenRouter(prompt) {
         return getMockResponse();
     }
 
-    // Try multiple models in sequence
-    for (const model of FREE_MODELS) {
+    // Prioritize last successful model
+    let modelsToTry = [...ALL_MODELS];
+    if (lastSuccessfulModel && modelsToTry.includes(lastSuccessfulModel)) {
+        modelsToTry = [lastSuccessfulModel, ...modelsToTry.filter(m => m !== lastSuccessfulModel)];
+        console.log(`🚀 Trying last successful model first: ${lastSuccessfulModel}`);
+    }
+
+    // Try multiple models in sequence (free first, then paid if needed)
+    for (const model of modelsToTry) {
         try {
             console.log(`Requesting tips using model: ${model}`);
-            const response = await fetch(API_URL, {
+            const response = await fetchWithTimeout(API_URL, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -125,33 +152,56 @@ async function callOpenRouter(prompt) {
                         { role: 'system', content: 'You are a Safety Assistant. Return the response strictly as a JSON Array of objects, where each object has a "title" and "description" key. Format: [{"title": "Tip Title", "description": "Details..."}]. Do not include markdown code blocks or introduction text.' },
                         { role: 'user', content: prompt }
                     ],
-                    temperature: 0.7,
+                    temperature: 0.5, // Lower for faster, more focused responses
+                    max_tokens: 800,  // Limit response length for speed
                 })
             });
 
             const data = await response.json();
 
             if (data.error) {
-                console.warn(`Model ${model} error:`, data.error.message);
+                console.warn(`❌ Model ${model} error:`, data.error.message || data.error);
+                if (data.error.metadata) {
+                    console.log('Error metadata:', data.error.metadata);
+                }
                 continue;
             }
 
+
+
             if (data.choices && data.choices.length > 0) {
                 let content = data.choices[0].message.content;
-                // Attempt to parse JSON
+                console.log(`Response from ${model}:`, content.substring(0, 200));
+
+                // Attempt to parse JSON with multiple strategies
                 try {
-                    // Strip code blocks if present
-                    content = content.replace(/```json/g, '').replace(/```/g, '').trim();
-                    const parsed = JSON.parse(content);
-                    if (Array.isArray(parsed)) return parsed;
+                    // Strategy 1: Strip markdown code blocks
+                    let cleaned = content.replace(/```json\s*/g, '').replace(/```\s*/g, '').trim();
+
+                    // Strategy 2: Try to find JSON array in the text
+                    const jsonMatch = cleaned.match(/\[\s*\{[\s\S]*\}\s*\]/);
+                    if (jsonMatch) {
+                        cleaned = jsonMatch[0];
+                    }
+
+                    const parsed = JSON.parse(cleaned);
+                    if (Array.isArray(parsed) && parsed.length > 0) {
+                        const modelType = model.includes(':free') ? '🆓 FREE' : '💰 PAID';
+                        console.log(`✅ Successfully parsed JSON from ${model} (${modelType})`);
+                        lastSuccessfulModel = model; // Cache for next time
+                        return parsed;
+                    }
                 } catch (e) {
-                    // Failed to parse JSON, fallback to text format if needed
-                    // But we really want JSON.
-                    console.log("JSON parse failed, trying next model or returning text");
+                    console.log(`JSON parse failed for ${model}:`, e.message);
+                    // Try next model
                 }
             }
         } catch (error) {
-            console.warn(`Failed with ${model}:`, error.message);
+            if (error.message === 'Request timeout') {
+                console.warn(`⏱️ ${model} timed out after ${API_TIMEOUT / 1000}s`);
+            } else {
+                console.warn(`Failed with ${model}:`, error.message);
+            }
         }
     }
 

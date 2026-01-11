@@ -1,8 +1,5 @@
 -- SafeSafar Complete Database Schema
--- Last Updated: 2026-01-11
--- Description: Consolidated schema including Incidents, Emergency Contacts, Safety Network, Check-ins, SOS Events, and Storage Policies.
 
--- Enable UUID extension (usually enabled by default in Supabase)
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 -- ==========================================

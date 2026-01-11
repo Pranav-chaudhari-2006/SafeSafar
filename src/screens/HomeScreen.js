@@ -104,7 +104,6 @@ export default function HomeScreen({ navigation }) {
               onPress={() => navigation.navigate('SOSInstructions')}
               style={styles.helpButton}
             >
-              <Ionicons name="help-circle" size={20} color="#6b7280" />
             </TouchableOpacity>
           </View>
           <MenuCard

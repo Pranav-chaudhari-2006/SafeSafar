@@ -207,6 +207,35 @@ export default function SafetyTipsScreen({ navigation }) {
         setRefreshing(false);
     };
 
+    // DEBUG: Clear all cached tips
+    const clearCache = async () => {
+        Alert.alert(
+            'Clear Cache',
+            'This will remove all cached safety tips. Continue?',
+            [
+                { text: 'Cancel', style: 'cancel' },
+                {
+                    text: 'Clear',
+                    style: 'destructive',
+                    onPress: async () => {
+                        try {
+                            const keys = await AsyncStorage.getAllKeys();
+                            const tipKeys = keys.filter(key => key.startsWith('safety_tips_'));
+                            await AsyncStorage.multiRemove(tipKeys);
+                            setLocationTips(null);
+                            setActiveCategory(null);
+                            Alert.alert('Success', `Cleared ${tipKeys.length} cached items`);
+                            console.log('Cleared cache keys:', tipKeys);
+                        } catch (error) {
+                            Alert.alert('Error', 'Failed to clear cache');
+                            console.error('Cache clear error:', error);
+                        }
+                    }
+                }
+            ]
+        );
+    };
+
     const categories = [
         {
             id: 'night',
@@ -451,16 +480,24 @@ export default function SafetyTipsScreen({ navigation }) {
                     <Text style={styles.title}>Safety Guide</Text>
                 </View>
 
-                <TouchableOpacity
-                    style={styles.headerButton}
-                    onPress={() => setShowSaved(!showSaved)}
-                >
-                    <Ionicons
-                        name={showSaved ? "list" : "bookmark"}
-                        size={24}
-                        color={showSaved ? "#06b6d4" : "#64748b"}
-                    />
-                </TouchableOpacity>
+                <View style={{ flexDirection: 'row', gap: 8 }}>
+                    <TouchableOpacity
+                        style={styles.headerButton}
+                        onPress={clearCache}
+                    >
+                        <Ionicons name="trash-outline" size={22} color="#ef4444" />
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        style={styles.headerButton}
+                        onPress={() => setShowSaved(!showSaved)}
+                    >
+                        <Ionicons
+                            name={showSaved ? "list" : "bookmark"}
+                            size={24}
+                            color={showSaved ? "#06b6d4" : "#64748b"}
+                        />
+                    </TouchableOpacity>
+                </View>
             </View>
 
             <ScrollView
