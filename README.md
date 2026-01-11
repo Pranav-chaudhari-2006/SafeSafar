@@ -186,6 +186,8 @@ Reduced public safety risks
 
 SafeSafar empowers women with technology, intelligence, and community support.
 
+---
+
 👥 Team Techspire
 
 Pranav Chaudhari
