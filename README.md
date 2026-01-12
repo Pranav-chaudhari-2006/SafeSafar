@@ -207,7 +207,9 @@ Shreya Jadhav
 
 Madhura Barve
 
-##📸Glimpse of Project
+---
+
+###📸Glimpse of Project
 
 | Screen Name | Description | Screenshot |
 |------------|-------------|------------|
