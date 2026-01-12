@@ -9,9 +9,6 @@
 
 ## 🚀 Live Project
 
-- **GitHub Repository:**  
-  https://github.com/Pranav-chaudhari-2006/SafeSafar
-
 - **Status:** Functional & Deployed 
  
   APK Link: https://expo.dev/artifacts/eas/whK5wZgraHFNDXXCtZirjN.apk
