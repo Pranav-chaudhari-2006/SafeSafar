@@ -248,4 +248,4 @@ Always contact local authorities in critical situations.
 git clone https://github.com/Pranav-chaudhari-2006/SafeSafar
 cd SafeSafar
 npm install
-expo start
+npx expo start
