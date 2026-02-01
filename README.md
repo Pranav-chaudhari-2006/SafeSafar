@@ -7,7 +7,7 @@
 
 ---
 
-## 🚀 Live Project
+## 🚀 Project
  
   APK Link: Under Development
   
