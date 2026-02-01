@@ -11,7 +11,7 @@
 
 - **Status:** Functional & Deployed 
  
-  APK Link: https://expo.dev/artifacts/eas/whK5wZgraHFNDXXCtZirjN.apk
+  APK Link: Under Development
   
   Online Web Emulator Link : https://appetize.io/app/b_hejwjrjd2zjjd3t6qbkpb3vepa
   
