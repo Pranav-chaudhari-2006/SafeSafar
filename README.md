@@ -8,8 +8,6 @@
 ---
 
 ## 🚀 Live Project
-
-- **Status:** Functional & Deployed 
  
   APK Link: Under Development
   
