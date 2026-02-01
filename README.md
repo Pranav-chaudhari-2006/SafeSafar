@@ -13,10 +13,6 @@
  
   APK Link: Under Development
   
-  Online Web Emulator Link : https://appetize.io/app/b_hejwjrjd2zjjd3t6qbkpb3vepa
-  
-  Vercel Link : https://safesafar-prototype.vercel.app/
-  
 - **Platform:** Android (React Native – Expo)
 
 ## Demo Credentials   
